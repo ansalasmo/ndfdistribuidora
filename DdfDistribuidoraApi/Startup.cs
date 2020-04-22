@@ -21,9 +21,7 @@ namespace DdfDistribuidoraApi
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -31,24 +29,17 @@ namespace DdfDistribuidoraApi
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContextPool<NdfDistribuidoraContext>(options => options.UseSqlServer(connection));
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
-
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

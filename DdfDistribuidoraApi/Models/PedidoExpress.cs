@@ -18,6 +18,8 @@ namespace DdfDistribuidoraApi.Models
         public int Periodo { get; set; }
         public int Mes { get; set; }
         public int Dia { get; set; }
-        public int NumeroPedido { get; set; } 
+        public int NumeroPedido { get; set; }
+        public decimal Distancia { get; set; }
+        public decimal MontoExpress { get; set; }
     }
 }
