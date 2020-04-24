@@ -7,6 +7,8 @@ namespace DdfDistribuidoraApi.Models
 {
     public class PedidoExpress
     {
+        
+        public string Correo { get; set; }
         public string Comercio { get; set; }
         public string LatitudOrigen { get; set; }
         public string LongitudOrigen { get; set; }

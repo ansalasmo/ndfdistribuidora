@@ -21,8 +21,8 @@ namespace DdfDistribuidoraApi.Controllers
             this.context = context;
         }
         [Route("GetPedidosPendiente")]
-        [HttpGet]
-        public ActionResult GetPedidosPendiente()
+        [HttpPost]
+        public ActionResult GetPedidosPendiente([FromBody] LoginRequest model)
         {          
             SqlConnection connection = (SqlConnection)context.Database.GetDbConnection();
             List<PedidoExpress> listado = new List<PedidoExpress>();
@@ -31,12 +31,13 @@ namespace DdfDistribuidoraApi.Controllers
                 SqlCommand command = connection.CreateCommand(); 
                 command.CommandType = CommandType.StoredProcedure; 
                 connection.Open(); 
-                command.CommandText = "FAC_TraerPedidosPendientes"; 
+                command.CommandText = "FAC_TraerPedidosPendientes";
+                command.Parameters.Add("@Correo", SqlDbType.VarChar, 100).Value = model.Correo;
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     var objetoPedido = new PedidoExpress()
-                    {
+                    {   
                         Comercio = Convert.ToString(reader["Comercio"]),
                         LatitudOrigen = Convert.ToString(reader["LatitudOrigen"]),
                         LongitudOrigen = Convert.ToString(reader["LongitudOrigen"]),
@@ -51,7 +52,6 @@ namespace DdfDistribuidoraApi.Controllers
                         NumeroPedido = Convert.ToInt32(reader["NumeroPedido"]),
                         Distancia = Convert.ToDecimal(reader["Distancia"]),
                         MontoExpress = Convert.ToDecimal(reader["MontoExpress"])
-
                     };
                     listado.Add(objetoPedido);
                 }
@@ -112,11 +112,20 @@ namespace DdfDistribuidoraApi.Controllers
         { 
           return  Ok(context.RhCantones.Where(x => x.CodigoProvincia == model.IdProvincia).ToList());  
         }
+         
+
+
         [Route("GetDistritos")]
         [HttpPost]
         public ActionResult GetDistritos([FromBody]Lugares model)
         {
             return Ok(context.RhDistritos.Where(x => x.CodigoCanton == model.IdCanton  && x.CodigoProvincia==model.IdProvincia).ToList());
         }
+
+
+       
+
+
+
     }
 }

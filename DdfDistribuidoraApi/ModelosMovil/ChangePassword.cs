@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace DdfDistribuidoraApi.ModelosMovil
 {
-    public class LoginRequest
+    public class ChangePassword
     {
+        public string CurrentPassword { get; set; }
+        public string NewPassword { get; set; }
         public string Correo { get; set; }
-        public string Password { get; set; }
     }
 }
