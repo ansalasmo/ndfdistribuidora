@@ -37,7 +37,7 @@ namespace DdfDistribuidoraApi.Controllers
                 while (reader.Read())
                 {
                     var objetoPedido = new PedidoExpress()
-                    {   
+                    {
                         Comercio = Convert.ToString(reader["Comercio"]),
                         LatitudOrigen = Convert.ToString(reader["LatitudOrigen"]),
                         LongitudOrigen = Convert.ToString(reader["LongitudOrigen"]),
@@ -51,7 +51,8 @@ namespace DdfDistribuidoraApi.Controllers
                         Dia = Convert.ToInt32(reader["Dia"]),
                         NumeroPedido = Convert.ToInt32(reader["NumeroPedido"]),
                         Distancia = Convert.ToDecimal(reader["Distancia"]),
-                        MontoExpress = Convert.ToDecimal(reader["MontoExpress"])
+                        MontoExpress = Convert.ToDecimal(reader["MontoExpress"]),
+                        Correo = model.Correo
                     };
                     listado.Add(objetoPedido);
                 }
@@ -71,26 +72,26 @@ namespace DdfDistribuidoraApi.Controllers
         }
         [Route("SetPedidoAsignado")]
         [HttpGet]
-        public ActionResult SetPedidoAsignado(DateTime? fecha, int periodo, int mes, int dia, int numeroPedido, string correoRepartidor)
+        public ActionResult SetPedidoAsignado(PedidosSend model)
         {
             SqlConnection connection = (SqlConnection)context.Database.GetDbConnection();
-            string respuesta = "";
+            Response respuesta = new Response();
             try
             {
                 SqlCommand command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
                 connection.Open();
                 command.CommandText = "Fac_ActualizarRepartidorPed";
-                command.Parameters.Add("@fecha", SqlDbType.DateTime).Value = fecha;
-                command.Parameters.Add("@periodo", SqlDbType.Int).Value = periodo;
-                command.Parameters.Add("@mes", SqlDbType.Int).Value = mes;
-                command.Parameters.Add("@dia", SqlDbType.Int).Value = dia;
-                command.Parameters.Add("@numeroPedido", SqlDbType.Int).Value = numeroPedido;
-                command.Parameters.Add("@correoRepartidor", SqlDbType.VarChar, 100).Value = correoRepartidor;
+                command.Parameters.Add("@fecha", SqlDbType.DateTime).Value = model.Fecha;
+                command.Parameters.Add("@periodo", SqlDbType.Int).Value = model.Periodo;
+                command.Parameters.Add("@mes", SqlDbType.Int).Value = model.Mes;
+                command.Parameters.Add("@dia", SqlDbType.Int).Value = model.Dia;
+                command.Parameters.Add("@numeroPedido", SqlDbType.Int).Value = model.NumeroPedido;
+                command.Parameters.Add("@correoRepartidor", SqlDbType.VarChar, 100).Value = model.CorreoRepartidor;
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    respuesta = Convert.ToString(reader["respuesta"]);
+                    respuesta.IsSuccess = Convert.ToBoolean(reader["respuesta"]);
                 }
             }
             catch (Exception e)
@@ -106,6 +107,9 @@ namespace DdfDistribuidoraApi.Controllers
             }
             return Ok(respuesta);
         }
+
+
+
         [Route("GetCantones")]
         [HttpPost]  
         public ActionResult GetCantones([FromBody]Lugares model)
