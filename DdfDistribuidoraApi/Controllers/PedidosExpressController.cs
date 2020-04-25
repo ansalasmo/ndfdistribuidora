@@ -70,8 +70,12 @@ namespace DdfDistribuidoraApi.Controllers
             }
             return Ok(listado);
         }
+
+
+
+
         [Route("SetPedidoAsignado")]
-        [HttpGet]
+        [HttpPost]
         public ActionResult SetPedidoAsignado(PedidosSend model)
         {
             SqlConnection connection = (SqlConnection)context.Database.GetDbConnection();
@@ -82,6 +86,8 @@ namespace DdfDistribuidoraApi.Controllers
                 command.CommandType = CommandType.StoredProcedure;
                 connection.Open();
                 command.CommandText = "Fac_ActualizarRepartidorPed";
+
+                model.Fecha = Convert.ToDateTime(model.Fecha.ToString().Replace("-",""));
                 command.Parameters.Add("@fecha", SqlDbType.DateTime).Value = model.Fecha;
                 command.Parameters.Add("@periodo", SqlDbType.Int).Value = model.Periodo;
                 command.Parameters.Add("@mes", SqlDbType.Int).Value = model.Mes;
