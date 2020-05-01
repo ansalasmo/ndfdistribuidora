@@ -17,7 +17,6 @@ namespace DdfDistribuidoraApi.ModelosMovil
         public int CodigoCanton { get; set; }
         public string NombreCanton { get; set; }
         public int CodigoDistrito { get; set; }
-      
         public char TipoVehiculo { get; set; }
         public string Placa { get; set; }
         public string Password { get; set; }

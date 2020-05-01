@@ -15,29 +15,12 @@ namespace DdfDistribuidoraApi.Controllers
     [Route("Startup")]
     [ApiController]
     public class StartupController : ControllerBase
-    {
-
-
-        private readonly NdfDistribuidoraContext context;
-
-
-
-
-
-
-
-
+    { 
+        private readonly NdfDistribuidoraContext context; 
         public StartupController(NdfDistribuidoraContext context)
         {
             this.context = context;
-        } 
-
-
-
-
-
-
-
+        }  
         [Route("RegistrarRepartidor")]
         [HttpPost]
         public Object RegistrarRepartidor([FromBody]RegisterRequest model)
@@ -79,9 +62,6 @@ namespace DdfDistribuidoraApi.Controllers
             }
             return Ok(respuesta);
         }
-
-
-
 
 
         [Route("ActualizarRepartidor")]
@@ -323,8 +303,7 @@ namespace DdfDistribuidoraApi.Controllers
                 {
                     connection.Close();
                 }
-            }
-
+            } 
             return Ok(response);
         }
 
