@@ -12,6 +12,7 @@ namespace DdfDistribuidoraApi.ModelosMovil
         public int Mes { get; set; }
         public int Dia { get; set; }
         public int NumeroPedido { get; set; }
-        public string CorreoRepartidor { get; set; } 
+        public string CorreoRepartidor { get; set; }
+        public int CodigoLocal { get; set; }
     }
 }

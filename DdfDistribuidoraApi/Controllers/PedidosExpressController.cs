@@ -1,4 +1,5 @@
-﻿using DdfDistribuidoraApi.ModelosMovil;
+﻿using DdfDistribuidoraApi.Helpers;
+using DdfDistribuidoraApi.ModelosMovil;
 using DdfDistribuidoraApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -14,13 +15,12 @@ namespace DdfDistribuidoraApi.Controllers
     public class PedidosExpressController : ControllerBase
     {
         private readonly NdfDistribuidoraContext context;
+        private readonly IMailHelper mailHelper;
 
-
-
-
-        public PedidosExpressController(NdfDistribuidoraContext context)
+        public PedidosExpressController(NdfDistribuidoraContext context, IMailHelper  mailHelper)
         {
             this.context = context;
+            this.mailHelper = mailHelper;
         }
 
 
@@ -59,7 +59,8 @@ namespace DdfDistribuidoraApi.Controllers
                         NumeroPedido = Convert.ToInt32(reader["NumeroPedido"]),
                         Distancia = Convert.ToDecimal(reader["Distancia"]),
                         MontoExpress = Convert.ToDecimal(reader["MontoExpress"]),
-                        Correo = model.Correo
+                        Correo = model.Correo,
+                        CodigoLocal= Convert.ToInt32(reader["CodigoLocal"]),
                     };
                     listado.Add(objetoPedido);
                 }
@@ -121,6 +122,7 @@ namespace DdfDistribuidoraApi.Controllers
                         MontoExpress = Convert.ToDecimal(reader["MontoExpress"]),
                         Correo = model.Correo,
                         Estado = Convert.ToChar(reader["Estado"]),
+                        CodigoLocal = Convert.ToChar(reader["CodigoLocal"]),
                     };
                     listado.Add(objetoPedido);
                 }
@@ -164,6 +166,8 @@ namespace DdfDistribuidoraApi.Controllers
                 command.Parameters.Add("@numeroPedido", SqlDbType.Int).Value = model.NumeroPedido;
                 command.Parameters.Add("@correoRepartidor", SqlDbType.VarChar, 100).Value = model.Correo;
                 command.Parameters.Add("@estado", SqlDbType.Char,1).Value = model.Estado;
+                command.Parameters.Add("@numeroFactura", SqlDbType.Int).Value = model.NumeroFactura;
+                command.Parameters.Add("@codigoLocal", SqlDbType.Int).Value = model.CodigoLocal;
                 SqlDataReader reader = command.ExecuteReader(); 
                 while (reader.Read())
                 { 
@@ -212,7 +216,7 @@ namespace DdfDistribuidoraApi.Controllers
                 while (reader.Read())
                 {
                     obje.IsSuccess = Convert.ToBoolean(reader["Respuesta"]);
-                }
+                } 
             }
             catch (Exception e)
             {
@@ -251,6 +255,8 @@ namespace DdfDistribuidoraApi.Controllers
                 command.Parameters.Add("@dia", SqlDbType.Int).Value = model.Dia;
                 command.Parameters.Add("@numeroPedido", SqlDbType.Int).Value = model.NumeroPedido;
                 command.Parameters.Add("@correoRepartidor", SqlDbType.VarChar, 100).Value = model.CorreoRepartidor;
+                command.Parameters.Add("@CodigoLocal", SqlDbType.Int).Value = model.CodigoLocal;
+
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -326,12 +332,6 @@ namespace DdfDistribuidoraApi.Controllers
         { 
           return  Ok(context.RhCantones.Where(x => x.CodigoProvincia == model.IdProvincia).ToList());  
         }
-         
-
-
-
-
-
 
         [Route("GetDistritos")]
         [HttpPost]
@@ -346,13 +346,67 @@ namespace DdfDistribuidoraApi.Controllers
         public ActionResult GetTelefonoAyuda()
         {
             Response obje = new Response();
-            obje.Message = context.FacParametros.Select(x => x.Telefonos).FirstOrDefault().ToString();
-
-
+            obje.Message = context.FacParametros.Select(x => x.Telefonos).FirstOrDefault().ToString(); 
             return Ok(obje);
         }
 
 
 
+
+
+
+        [Route("RecuperarContrasena")]
+        [HttpPost]
+        public ActionResult RecuperarContrasena([FromBody]LoginRequest model)
+        {
+            SqlConnection connection = (SqlConnection)context.Database.GetDbConnection();
+            Response respuesta = new Response();
+            respuesta.IsSuccess = true;
+            try
+            {
+                SqlCommand command = connection.CreateCommand();
+                command.CommandType = CommandType.Text;
+                connection.Open(); 
+                command.CommandText = "Select Contrasena FROM FAC_Repartidores";
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    respuesta.Message = Convert.ToString(reader["Contrasena"]);
+                } 
+                mailHelper.SendMail(model.Correo, "Email confirmation",
+                         $"<table style = 'max-width: 600px; padding: 10px; margin:0 auto; border-collapse: collapse;'>" +
+                         $"  <tr>" +
+                         $"    <td style = 'background-color: #34495e; text-align: center; padding: 0'>" + 
+                         $"  </td>" +
+                         $"  </tr>" +
+                         $"  <tr>" +
+                         $"  <td style = 'padding: 0'>" + respuesta.Message +
+                         $"  </td>"+ 
+                         $"</tr>" +
+                         $"<tr>" +
+                         $" <td style = 'background-color: #ecf0f1'>" +
+                         $"  <div style = 'color: #34495e; margin: 4% 10% 2%; text-align: justify;font-family: sans-serif'>" + 
+                         $"  </div>" +
+                         $" </td >" +
+                         $"</tr>" +
+                         $"</table>");
+                return Ok(respuesta); 
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Error inesperado antes de realizar la consulta de la cuenta de pedidos asignados" + e.Message);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+
+
+
+        }
+          
     }
 }

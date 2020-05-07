@@ -23,5 +23,9 @@ namespace DdfDistribuidoraApi.Models
         public decimal Distancia { get; set; }
         public decimal MontoExpress { get; set; }
         public char Estado { get; set; }
+        public int CodigoLocal { get; set; }
+
+        public int NumeroFactura { get; set; }
+        
     }
 }

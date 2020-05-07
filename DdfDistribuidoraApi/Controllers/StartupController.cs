@@ -102,7 +102,6 @@ namespace DdfDistribuidoraApi.Controllers
                     response2.Estado = 'A';
                     if (response2.Nombre == " ")
                     {
-                      
                         response.IsSuccess = false;
                         return Ok(response);
                     }
@@ -265,7 +264,6 @@ namespace DdfDistribuidoraApi.Controllers
             else
             {
                 return Ok(response);
-
             }
         }
 
@@ -306,6 +304,5 @@ namespace DdfDistribuidoraApi.Controllers
             } 
             return Ok(response);
         }
-
     }
 }

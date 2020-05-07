@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DdfDistribuidoraApi.Helpers;
 using DdfDistribuidoraApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,9 +29,14 @@ namespace DdfDistribuidoraApi
             services.AddControllers();
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContextPool<NdfDistribuidoraContext>(options => options.UseSqlServer(connection));
+            services.AddScoped<IMailHelper, MailHelper>();
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+          
         }
        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
+
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -45,5 +51,8 @@ namespace DdfDistribuidoraApi
                 endpoints.MapControllers();
             });
         }
+
+
+
     }
 }
