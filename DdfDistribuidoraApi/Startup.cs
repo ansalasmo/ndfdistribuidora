@@ -30,6 +30,7 @@ namespace DdfDistribuidoraApi
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContextPool<NdfDistribuidoraContext>(options => options.UseSqlServer(connection));
             services.AddScoped<IMailHelper, MailHelper>();
+            services.AddScoped<IOSRMRouteService, OSRMRouteService>();
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
           
         }
